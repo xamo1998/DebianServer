@@ -1,0 +1,83 @@
+#!/usr/bin/perl
+
+use strict;
+use CGI;
+use CGI::Session;
+use CGI::Carp qw(fatalsToBrowser);
+use DBI;
+use MIME::Base64 ();
+
+my $cgi = new CGI;
+
+my $usuario = $cgi->param('username', $cgi->param('username'));
+my $password= $cgi->param('password', $cgi->param('password'));
+
+
+	my $root = "admin";
+	my $pass = "admin1234";
+	my $host = "localhost";
+	my $db = "users";
+
+	my $dbh = DBI->connect("DBI:MariaDB:database=$db;host=$host", $root, $pass,{RaiseError => 1, PrintError => 0});
+	my $sth = $dbh->prepare("SELECT password FROM final_users WHERE username='$usuario'");
+	#my $sth = $dbh->prepare('SELECT * FROM login');
+	#$sth->execute();
+	$sth->execute();
+
+	my $hash=$sth->fetchrow_array;
+
+	if(length ($hash) != 0){ #En el caso de encontrar un hash asociado a ese usuario...
+		my $pass_from_server = MIME::Base64::decode($hash);
+			if ($pass_from_server eq $password) { #Si la contraseña es correcta
+			my $session = new CGI::Session;
+			#Guardamos los parametros para la sesion
+			$session -> save_param($cgi);
+			#Incluimos un metodo para la expiracion de la sesion
+			$session->expires("+30m");
+			#Inlcluimos flush para que sincronice los datos dentro del servidor
+			$session->flush();
+			#Incluimos un header que nos reedireccionara a nuestra pagina privada (es private)
+			print $session->header(-location => "private.pl");
+			my $filename = 'report.txt';
+			open(my $fh ,'>',$filename) or die "Could not open";
+			print $fh "Acceso correcto";
+			close $fh;
+			print "Done\n";
+			$dbh -> disconnect();
+		}else{
+			print $cgi->header("text/html");
+			print "<meta http-equiv ='refresh' content='3; ../index.html'>";
+			print "<h3 style= 'color: red;'>Los datos introducidos son incorrectos </h3>";
+			
+			$dbh -> disconnect();
+		}
+	}else{
+			#Buscamos en las otras bases de datos...
+			$sth = $dbh->prepare("SELECT password FROM verified_users WHERE username='$usuario'");
+			$sth->execute();
+			$hash=$sth->fetchrow_array;
+			if(length ($hash) != 0){ #Hay un usuario con ese hash en el proceso de verificación
+				print $cgi->header("text/html");
+				print "<meta http-equiv ='refresh' content='3; ../index.html'>";
+				print "<h3 style= 'color: red;'>Tus datos estan siendo verificados, este proceso no tardará mas de 1 minuto...</h3>";
+				$dbh -> disconnect();
+			}else{
+				#Por último buscamos en la base de datos no verificados...
+				$sth = $dbh->prepare("SELECT password FROM unverified_users WHERE username='$usuario'");
+				$sth->execute();
+				$hash=$sth->fetchrow_array;
+				if(length ($hash) != 0){ #Hay un usuario con ese hash sin verificar
+					print $cgi->header("text/html");
+					print "<meta http-equiv ='refresh' content='3; ../index.html'>";
+					print "<h3 style= 'color: red;'>Debes verificar tu email...</h3>";
+					
+					$dbh -> disconnect();
+				}else{
+					print $cgi->header("text/html");
+					print "<meta http-equiv ='refresh' content='3; ../index.html'>";
+					print "<h3 style= 'color: red;'>Datos incorrectos...</h3>";
+					
+					$dbh -> disconnect();
+				}
+			}
+	}

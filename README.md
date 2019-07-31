@@ -1,6 +1,12 @@
 
 # Servidor Startup - PIXIE
-
+#### _**NOTAS PREVIAS**_
+En este repositorio se encuentra también una versión en pdf para una lectura mas adecuada.
+También se encuentran todos los ficheros de código.
+##### _**Licencia**_
+Esto es un proyecto que hice para mi universidad por lo que puedes usarlo libremente, tan solo añade un link hacia este repositorio o a mi perfil de Github.
+##### _**Donaciones**_
+Si te ha ayudado mi trbajo puedes ayudarme a seguir creando contenido donandome a través del botón *Sponsor* que se encuentra en la parte superior
 ## Tabla de contenidos
 1. [Introducción](#1-introducción)
 2. [Descripción básica del Sistema](#2-descripción-básica-del-sistema)
@@ -14,8 +20,8 @@
     8. [Particiones y cuotas](#28-particiones-y-cuotas)
         1. [Sistema de ficheros /mnt/home](#281-sistema-de-ficheros-mnthome)
         2. [Aplicar cuotas](#282-aplicar-cuotas)
-    11. [Configurar CGI](#211-configurar-cgi)
-    12. [Ficheros log](#212-ficheros-log)
+    9. [Configurar CGI](#29-configurar-cgi)
+    10. [Ficheros log](#210-ficheros-log)
 3. [Descripción básica de los servidores](#3-descripción-básica-de-los-servidores)
     1. [SSH](#31-ssh)
     2. [Apache2](#32-apache2)
@@ -55,6 +61,7 @@ Veamos algunas imágenes del sitio web que hemos creado:
 ## 2. Descripción básica del Sistema
 
 Lo primero que tenemos que conocer, antes de entrar en detalle de la descripción básica del sistema, es conocer el sistema operativo donde vamos a realizar la práctica.
+
 Para la realización de la práctica se han usado tanto las distribuciones debian instaladas en el laboratorio de informática como Ubuntu para poder utilizarlo desde casa. En nuestro caso hemos usado *Ubuntu 18.04.2*.
 
 ### 2.1. Configuración inicial del sistema
@@ -86,7 +93,7 @@ La salida que obtenemos es la siguiente:
 
 ![img05](assets/img05.png?raw=true "img05")
 
-También debemos crear una carpeta para el grupo de técnicos en la cual solo puedan acceder ellos por lo que la crearemos en el directorio */mnt/home/manuales*. Cabe destacar que */mnt/home* en el momento de esta explicación no está creado ya que será la partición donde guardaremos los usuarios, sin embargo, en [esta]() sección podemos ver como instalarla.
+También debemos crear una carpeta para el grupo de técnicos en la cual solo puedan acceder ellos por lo que la crearemos en el directorio */mnt/home/manuales*. Cabe destacar que */mnt/home* en el momento de esta explicación no está creado ya que será la partición donde guardaremos los usuarios, sin embargo, en [esta](#282-aplicar-cuotas) sección podemos ver como instalarla.
 Para la creación de esta carpeta realizamos los siguientes comandos:
 
 ```
@@ -124,7 +131,9 @@ Para el correcto funcionamiento del código anterior hemos tenido que instalar a
 
 ### 2.4. Copias de seguridad
 En este apartado vamos a explicar el método que hemos usado para la realización de las copias de seguridad.
+
 Dicho esto, vamos a explicar como lo hemos hecho, hemos utilizado rsync que es una aplicación libre para sistemas de tipo Unix y Microsoft Windows que ofrece transmisión eficiente de datos incrementales, que opera también con datos comprimidos y cifrados.
+
 Primero mostraremos el fichero que realiza las copias de seguridad:
 ```perl
 #!/usr/bin/perl
@@ -160,6 +169,7 @@ Tras haber hecho esto, vamos a ver como hemos hecho las copias remotas, las cual
 ### 2.5. Copias de seguridad remotas
 
 Hemos escrito un script el cual permite al administrador mandar sus copias de seguridad a la nube, en este caso a Dropbox, para ello, debemos implementar una serie de cosas:
+
 Primero entramos en Dropbox developers, iniciamos sesión y creamos una aplicación:
 
 ![img08](assets/img08.png?raw=true "img08")
@@ -206,6 +216,7 @@ $fh_upload->close;
 unlink $compressed;
 ```
 Veamos un ejemplo, todos los *.rsync* están dentro de */var/backups/* por lo que los comprimiremos en un *.zip* y los enviaremos a la cuenta del administrador.
+
 Al ejecutar nos proporciona un link el cual al ponerlo en el navegador nos da un código para poder subir los archivos:
 
 ![img10](assets/img10.png?raw=true "img10")
@@ -246,6 +257,7 @@ system('rsync -avz -P -e ssh /usr/local/sbin/backup_usr.rysnc root@172.20.1.58:/
 ### 2.6. Tripwire
 
 Para la monitorización local hemos usado Tripwire el cual, al ejecutarlo nos proporciona una gran cantidad de información muy útil para el administrador. Para instalar tripwire debemos realizar los siguientes pasos:
+
 Instalamos tripwire con la siguiente orden:
 ```
 apt-get install tripwire
@@ -259,6 +271,7 @@ Configuramos nuestro dominio:
 ![img 17](assets/img17.png?raw=true "img17")
 
 Damos a Si hasta que nos pida una contraseña y la instalación finalizará.
+
 Una vez instalado, es necesario inicializar el sistema de la base de datos con el siguiente comando:
 ```
 tripwire --init
@@ -381,13 +394,15 @@ Obtenemos una salida como esta:
 
 ![img 24](assets/img24.png?raw=true "img24")
 
-Para que cada usuario tenga una cuota en concreto lo veremos más adelante en este informe, en concreto en [esta]() sección:
+Para que cada usuario tenga una cuota en concreto lo veremos más adelante en este informe, en concreto en [esta](#282-aplicar-cuotas) sección:
  
 
 ### 2.9. Configurar CGI
 
 Para la comunicación entre el servidor y las páginas web hemos usado CGI, en este apartado vamos a ver como configurarlo para la correcta ejecución de los ficheros .pl.
-NOTA: Este paso se debe realizar **después** de la [instalación de apache]()  pero por motivos de presentación en esta memoria lo haremos antes.
+
+NOTA: Este paso se debe realizar **después** de la [instalación de apache](#322-instalación-apache2)  pero por motivos de presentación en esta memoria lo haremos antes.
+
 Primero debemos activar cgi, para ello realizamos los siguientes comandos:
 ```apache
 a2dismod mpm_event
@@ -414,6 +429,7 @@ Una vez hecho esto podremos usar ficheros perl para la ejecución de tareas junt
 
 ### 2.10. Ficheros log
 En nuestra práctica utilizamos un fichero log que almacena la hora y el tipo de acceso cada vez que un usuario intenta hacer login en nuestro servidor.
+
 No hemos utilizado ningún tipo de comando ya que desde perl nos ha parecido más fácil abrir un fichero y volcar los datos añadiéndolos al final.
 
 ## 3. Descripción básica de los servidores
@@ -444,6 +460,7 @@ En este apartado veremos cómo instalar y configurar Apache.
 El servidor HTTP Apache es un servidor web HTTP de código abierto, para plataformas Unix (BSD, GNU/Linux, etc.), Microsoft Windows, Macintosh y otras. Es una de las herramientas más usadas para la gestión de servidores que requieren HTTP.
 #### 3.2.2. Instalación Apache2
 A continuación, procedemos a ver los pasos seguidos en la instalación y configuración de apache. Lo primero de todo antes de instalar nada, siempre es actualizar el sistema:
+
 Una vez actualizado, instalamos el paquete de apache:
 ```
 apt-get install apache2 apache2-doc apache2-utils
@@ -453,6 +470,7 @@ La salida que obtenemos es la siguiente:
 ![img 25](assets/img25.png?raw=true "img25")
 
 Podemos destacar que los paquetes para apache tan solo ocupan 30.9 MB.
+
 Si ahora abrimos nuestro navegador y escribimos en la url: *localhost* obtenemos la siguiente página web:
 
 ![img 26](assets/img26.png?raw=true "img26")
@@ -585,6 +603,7 @@ Por último, reiniciamos apache:
 systemctl restart apache2
 ```
 El siguiente paso es crear las claves RSA, una publica y otra privada con las cuales se podrá establecer una comunicación segura bidireccional entre el servidor y el cliente. Para la creación de estas claves usaremos el comando openssl que viene instalado por defecto en Debian 9.
+
 Creamos una clave de longitud 2048 bits:
 ```
 openssl genrsa -des3 -out server.key 2048  
@@ -1002,6 +1021,7 @@ Hemos implementado en el servidor una gran número de funcionalidades pero aun n
 
 ### 7. Conclusiones
 Esta es una de las practicas más completas y complicadas (en cuanto a quebraderos de cabeza) nos hemos encontrado, al menos a nuestro parecer, pero es una práctica que te hace aprender mucho sobre la administración de sistemas y de cómo configurar nuestros propios servidores.
+
 Nos hubiera gustado algo más de libertad para la elección de lenguajes, o métodos de creación de servidores pero dado que está enfocado a administrar y no a crear un servidor eficiente y simple no ha sido posible.
 
 ## 8. Referencias
