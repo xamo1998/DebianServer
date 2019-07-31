@@ -2,42 +2,42 @@
 # Servidor Startup - PIXIE
 
 ## Tabla de contenidos
-1. [Introducción práctica](#introducción-práctica)
-2. [Descripción básica del Sistema](#descripción-básica-del-sistema)
-    1. [Configuración inicial del sistema](#configuración-inicial-del-sistema)
-    2. [Grupos de trabajo](#grupos-de-trabajo)
-    3. [Reporte del login del administrador](#reporte-del-login-del-administrador)
-    4. [Copias de seguridad](#copias-de-seguridad)
-    5. [Copias de seguridad remotas](#copias-de-seguridad-remotas)
-    6. [Tripwire](#tripwire)
-    7. [Ficheros CRON](#ficheros-cron)
-    8. [Particiones y cuotas](#particiones-y-cuotas)
-        1. [Sistema de ficheros /mnt/home](#sistema-de-ficheros-mnthome)
-        2. [Aplicar cuotas](#aplicar-cuotas)
-    11. [Configurar CGI](#configurar-cgi)
-    12. [Ficheros log](#ficheros-log)
-3. [Descripción básica de los servidores](#descripción-básica-de-los-servidores)
-    1. [SSH](#ssh)
-    2. [Apache2](#apache2)
-        1. [Introducción](#introducción)
-        2. [Instalación Apache2](#instalación-apache2)
-        3. [Habilitar fichero .htaccess](#habilitar-fichero-.htaccess)
-        4. [Mover HTML](#mover-html)
-        5. [Protección anti-ataques DoS](#protección-anti-ataques-dos)
-        6. [Página segura HTTPS con SSL-RSA](#página-segura-https-con-ssl-rsa)
-        7. [AWStats](#awstats)
-    3. [MariaDB](#mariadb)
-    4. [Creación de Blogs](#creación-de-blogs)
-    5. [Cacti](#cacti)
-    6. [Servidor de correo electrónico (Roundcube)](#servidor-de-correo-electrónico-roundcube)
-    14. [Servidor FTP](#servidor-ftp)
-4. [Explicación scripts CGI](#explicación-scripts-cgi)
-5. [Problemas encontrados](#problemas-encontrados)
-6. [Posibles mejoras](#posibles-mejoras)
-7. [Conclusiones](#conclusiones)
-8. [Referencias](#referencias)
+1. [Introducción](#1-introducción)
+2. [Descripción básica del Sistema](#2-descripción-básica-del-sistema)
+    1. [Configuración inicial del sistema](#21-configuración-inicial-del-sistema)
+    2. [Grupos de trabajo](#22-grupos-de-trabajo)
+    3. [Reporte del login del administrador](#23-reporte-del-login-del-administrador)
+    4. [Copias de seguridad](#24-copias-de-seguridad)
+    5. [Copias de seguridad remotas](#25-copias-de-seguridad-remotas)
+    6. [Tripwire](#26-tripwire)
+    7. [Ficheros CRON](#27-ficheros-cron)
+    8. [Particiones y cuotas](#28-particiones-y-cuotas)
+        1. [Sistema de ficheros /mnt/home](#281-sistema-de-ficheros-mnthome)
+        2. [Aplicar cuotas](#282-aplicar-cuotas)
+    11. [Configurar CGI](#211-configurar-cgi)
+    12. [Ficheros log](#212-ficheros-log)
+3. [Descripción básica de los servidores](#3-descripción-básica-de-los-servidores)
+    1. [SSH](#31-ssh)
+    2. [Apache2](#32-apache2)
+        1. [Introducción](#321-introducción)
+        2. [Instalación Apache2](#322-instalación-apache2)
+        3. [Habilitar fichero .htaccess](#323-habilitar-fichero-htaccess)
+        4. [Mover HTML](#324-mover-html)
+        5. [Protección anti-ataques DoS](#325-protección-anti-ataques-dos)
+        6. [Página segura HTTPS con SSL-RSA](#326-página-segura-https-con-ssl-rsa)
+        7. [AWStats](#327-awstats)
+    3. [MariaDB](#33-mariadb)
+    4. [Creación de Blogs](#34-creación-de-blogs)
+    5. [Cacti](#35-cacti)
+    6. [Servidor de correo electrónico (Roundcube)](#36-servidor-de-correo-electrónico-roundcube)
+    7. [Servidor FTP](#37-servidor-ftp)
+4. [Explicación scripts CGI](#4-explicación-scripts-cgi)
+5. [Problemas encontrados](#5-problemas-encontrados)
+6. [Posibles mejoras](#6-posibles-mejoras)
+7. [Conclusiones](#7-conclusiones)
+8. [Referencias](#8-referencias)
 
-## Introducción práctica
+## 1. Introducción
 La siguiente práctica consistirá en hacer un servidor web para una pequeña startup, como se indica en el enunciado que podremos encontrar en Studium. Nuestro enfoque ha sido hacia una tienda de E-commerce y en concreto de venta de ropa.
 
 Cabe destacar que la plantilla html la hemos descargado ya que era gratuita y la hemos modificado con nuestras necesidades.
@@ -52,12 +52,12 @@ Veamos algunas imágenes del sitio web que hemos creado:
 
 ![img04](assets/img04.png?raw=true "img04")
 
-## Descripción básica del Sistema
+## 2. Descripción básica del Sistema
 
 Lo primero que tenemos que conocer, antes de entrar en detalle de la descripción básica del sistema, es conocer el sistema operativo donde vamos a realizar la práctica.
 Para la realización de la práctica se han usado tanto las distribuciones debian instaladas en el laboratorio de informática como Ubuntu para poder utilizarlo desde casa. En nuestro caso hemos usado *Ubuntu 18.04.2*.
 
-### Configuración inicial del sistema
+### 2.1. Configuración inicial del sistema
 
 Primero debemos actualizar el sistema e instalar algunos módulos que necesitaremos más adelante. Para actualizar el sistema:
 
@@ -70,7 +70,7 @@ Después debemos instalar el siguiente paquete:
 apt-get install build-essential
 ```
 
-### Grupos de trabajo
+### 2.2. Grupos de trabajo
 
 Lo primero que realizaremos para la configuración del sistema es la creación de los dos grupos de usuarios requeridos (CLIENTES y TECNICOS)
 Para añadirlos lo hacemos con la siguiente orden:
@@ -94,7 +94,7 @@ mkdir /mnt/home/manuales
 chown root:1004 /mnt/home/manuales
 ```
 Donde pone 1004 se debe poner el número que nos devuelve el comando que hemos explicado anteriormente. El comando *chown* sirve para especificar el o los propietarios de un archivo o carpeta.
-### Reporte del login del administrador
+### 2.3. Reporte del login del administrador
 Para la realización de este apartado haremos uso de la carpeta */etc/profile.d/* esta carpeta contiene con una serie de scripts que se ejecutan al iniciar sesión. Encontramos un problema ya que al guardar en esta carpeta nuestro código de perl para enviar un correo al administrador, no se ejecutaba el programa por lo que creamos un fichero *.sh* que ejecutara el *.pl*. El script *.sh* es el siguiente:
 
 ```perl
@@ -122,7 +122,7 @@ $mail->bye;
 ```
 Para el correcto funcionamiento del código anterior hemos tenido que instalar a través de CPAN los módulos *Mail::Sender* y *Email::Send::SMTP::Gmail*, para ello tan solo ejecutamos el comando cpan y una vez dentro *install Mail::Sender* y *Email::Send::SMTP::Gmail*.
 
-### Copias de seguridad
+### 2.4. Copias de seguridad
 En este apartado vamos a explicar el método que hemos usado para la realización de las copias de seguridad.
 Dicho esto, vamos a explicar como lo hemos hecho, hemos utilizado rsync que es una aplicación libre para sistemas de tipo Unix y Microsoft Windows que ofrece transmisión eficiente de datos incrementales, que opera también con datos comprimidos y cifrados.
 Primero mostraremos el fichero que realiza las copias de seguridad:
@@ -157,7 +157,7 @@ Si vemos el tamaño de estos ficheros con el comando *du* vemos que el más gran
 ![img07](assets/img07.png?raw=true "img07")
 
 Tras haber hecho esto, vamos a ver como hemos hecho las copias remotas, las cuales enviamos por Dropbox utilizando el siguiente código.
-### Copias de seguridad remotas
+### 2.5. Copias de seguridad remotas
 
 Hemos escrito un script el cual permite al administrador mandar sus copias de seguridad a la nube, en este caso a Dropbox, para ello, debemos implementar una serie de cosas:
 Primero entramos en Dropbox developers, iniciamos sesión y creamos una aplicación:
@@ -243,7 +243,7 @@ system('rsync -avz -P -e ssh /etc/backup_etc.rysnc root@172.20.1.58:/home/backup
 system('rsync -avz -P -e ssh /var/backup_var.rysnc root@172.20.1.58:/home/backups');
 system('rsync -avz -P -e ssh /usr/local/sbin/backup_usr.rysnc root@172.20.1.58:/home/backups');
 ```
-### Tripwire
+### 2.6. Tripwire
 
 Para la monitorización local hemos usado Tripwire el cual, al ejecutarlo nos proporciona una gran cantidad de información muy útil para el administrador. Para instalar tripwire debemos realizar los siguientes pasos:
 Instalamos tripwire con la siguiente orden:
@@ -319,7 +319,7 @@ Al ejecutar el código si vamos a nuestro correo podremos ver como se ha enviado
 
 ![img 22](assets/img22.png?raw=true "img22")
 
-### Ficheros CRON
+### 2.7. Ficheros CRON
 
 Aquí explicaremos todos los cron que tenemos en el servidor, para añadir un script al cron tenemos varias opciones, una de ellas es mediante el comando *crontab -e*, otra es modificando el archivo */etc/crontab*.
 
@@ -334,10 +334,10 @@ Mostraremos una captura con los scripts que tenemos en el cron y cuál es su fun
 - **backups.pl**: Realiza las copias de seguridad.
  
 
-### Particiones y cuotas
+### 2.8. Particiones y cuotas
 
 Los usuarios deben tener asignadas unas cuotas por lo que hemos optado por crear un sistema de fichero donde guardar los */home* de los usuarios y aplicar ahí las cuotas. Para ello debemos realizar los siguientes pasos.
-#### Sistema de ficheros /mnt/home
+#### 2.8.1. Sistema de ficheros /mnt/home
 
 Primero debemos crear un sistema de ficheros en una carpeta, por ejemplo */home/user/SistemaFich*, para hacer esto realizamos la siguiente orden:
 ```
@@ -362,7 +362,7 @@ mount -a
 ```
 La partición estará configurada correctamente, si queremos usarla debemos reiniciar el sistema con la orden *reboot*.
 
-#### Aplicar cuotas
+#### 2.8.2. Aplicar cuotas
 
 Para aplicar las cuotas al sistema de ficheros debemos seguir los siguientes pasos, primero escribimos la siguiente línea:
 ```
@@ -384,7 +384,7 @@ Obtenemos una salida como esta:
 Para que cada usuario tenga una cuota en concreto lo veremos más adelante en este informe, en concreto en [esta]() sección:
  
 
-### Configurar CGI
+### 2.9. Configurar CGI
 
 Para la comunicación entre el servidor y las páginas web hemos usado CGI, en este apartado vamos a ver como configurarlo para la correcta ejecución de los ficheros .pl.
 NOTA: Este paso se debe realizar **después** de la [instalación de apache]()  pero por motivos de presentación en esta memoria lo haremos antes.
@@ -412,14 +412,14 @@ sudo service apache2 restart
 ```
 Una vez hecho esto podremos usar ficheros perl para la ejecución de tareas junto con apache.
 
-### Ficheros log
+### 2.10. Ficheros log
 En nuestra práctica utilizamos un fichero log que almacena la hora y el tipo de acceso cada vez que un usuario intenta hacer login en nuestro servidor.
 No hemos utilizado ningún tipo de comando ya que desde perl nos ha parecido más fácil abrir un fichero y volcar los datos añadiéndolos al final.
 
-## Descripción básica de los servidores
+## 3. Descripción básica de los servidores
 
 En este apartado veremos cómo hemos instalado y configurado todos los servidores que usamos en nuestro servidor.
-### SSH
+### 3.1. SSH
 Primero debemos instalar SSH, para ello escribimos:
 ```
 apt-get install ssh
@@ -438,11 +438,11 @@ systemctl restart ssh
 ```
  
 
-### Apache2
+### 3.2. Apache2
 En este apartado veremos cómo instalar y configurar Apache.
-#### Introducción
+#### 3.2.1. Introducción
 El servidor HTTP Apache es un servidor web HTTP de código abierto, para plataformas Unix (BSD, GNU/Linux, etc.), Microsoft Windows, Macintosh y otras. Es una de las herramientas más usadas para la gestión de servidores que requieren HTTP.
-#### Instalación Apache2
+#### 3.2.2. Instalación Apache2
 A continuación, procedemos a ver los pasos seguidos en la instalación y configuración de apache. Lo primero de todo antes de instalar nada, siempre es actualizar el sistema:
 Una vez actualizado, instalamos el paquete de apache:
 ```
@@ -505,7 +505,7 @@ Por último, tenemos que reiniciar el servicio para actualizar la configuración
 systemctl restart apache2
 ```
 
-#### Habilitar fichero .htaccess
+#### 3.2.3. Habilitar fichero .htaccess
 El archivo .htaccess es un archivo de configuración muy importante que se aplica a cada subcarpeta de nuestro servidor. En este archivo podemos hacer cosas como bloquear ciertas páginas, pedir autentificación para cierta página…
 
 Para configurarlo, primero debemos activar el módulo rewrite de la siguiente manera:
@@ -526,14 +526,14 @@ Una vez hemos modificado es archivo tan solo reiniciamos apache y estará funcio
 ```
 systemctl restart apache2  
 ```
-#### Mover HTML
+#### 3.2.4. Mover HTML
 Este paso es el más simple ya que si queremos que aparezca nuestra página web cuando la buscamos en el navegador en vez de la página de bienvenida de apache debemos copiar nuestros archivos html, css, js dentro de, en nuestro caso, */var/www/html/*.
 
 Cuando hagamos esto y pongamos la ip del servidor nos debería salir algo como esto:
 
 ![img 30](assets/img30.png?raw=true "img30")
 
-#### Protección anti-ataques DoS
+#### 3.2.5. Protección anti-ataques DoS
 Un ataque de denegación de servicio tiene como objetivo inhabilitar el uso de un sistema, una aplicación o una máquina, con el fin de bloquear el servicio para el que está destinado. Este ataque puede afectar, tanto a la fuente que ofrece la información como puede ser una aplicación o el canal de transmisión, como a la red informática.
 
 Debido a esto vamos a instalar un módulo que nos permita protegernos de este tipo de ataques, para ello instalamos el paquete *libapache2-mod-evasive*:
@@ -569,7 +569,7 @@ Por último, reiniciamos apache para que el archivo de configuración se cargue:
 systemctl restart apache2  
 ```
 
-#### Página segura HTTPS con SSL-RSA
+#### 3.2.6. Página segura HTTPS con SSL-RSA
 Si queremos tener la posibilidad de establecer conexiones cifradas a través de HTTPS, deberemos tener un certificado SSL. SSL (*Secure Socket Layer*) es el protocolo de cifrado más usado en la web y RSA es el algoritmo que cifrará la información que se envía a través de SSL.
 
 En primer lugar, tenemos que activar el módulo SSL de Apache, para ello ejecutamos:
@@ -648,7 +648,7 @@ Al añadir la excepción vamos a nuestra página web. Si observamos los detalles
 ![img 36](assets/img36.png?raw=true "img36")
 
 
-#### AWStats
+#### 3.2.7. AWStats
 AWStats es un programa que nos permite registrar la actividad de nuestro servidor Apache. Genera estadísticas de visitas que ordena temporalmente y tiene una gran cantidad de información útil para el administrador.
 
 ![img 37](assets/img37.png?raw=true "img37")
@@ -761,7 +761,7 @@ Para acceder a las estadísticas nos debemos dirigir a *http://tudominio.com/Est
 
 ![img 43](assets/img43.png?raw=true "img43")
 
-### MariaDB
+### 3.3. MariaDB
 En este apartado veremos cómo configurar MariaDB junto con Mysql y phpMyAdmin para guardar la información de los usuarios que se registran en nuestro servidor así como información que usan otros servidores que hemos instalado en nuestro servidor.
 
 El primer paso es instalar mariadb junto con los paquetes necesarios, la orden es:
@@ -865,7 +865,7 @@ Esto nos creara 5 tablas:
 5.	**Users_to_change**: Tabla en la cual guardaremos el nombre de los usuarios que han solicitado cambiar su contraseña.
  
 
-### Creación de Blogs
+### 3.4. Creación de Blogs
 Para la creación de blogs hemos usado Wordpress ya que es la opción más popular y dispone de una gran comunidad detrás que crea y mantiene plugins que añaden interesantes funciones a este gestor de contenidos, para instalarlo debemos seguir los siguientes pasos:
 
 Primero lo descargamos desde su página principal con la siguiente orden:
@@ -899,7 +899,7 @@ exit;
 
 Introducimos el nombre de la base de datos que acabamos de crear y el nombre de usuario y contraseña del usuario con todos los permisos.
 
-### Cacti
+### 3.5. Cacti
 Cacti es un visualizador de la actividad de nuestro servidor a través de una interfaz web que permite ver las estadísticas de uso en distintos periodos.
 
 Para instalarlo tan solo debemos realizar la siguiente orden:
@@ -911,7 +911,7 @@ Una vez instalado si vamos a la dirección *http::tudominio.com/cacti/* podremos
 ![img 53](assets/img53.png?raw=true "img53")
 
 
-### 3.13. Servidor de correo electrónico (Roundcube)
+### 3.6. Servidor de correo electrónico (Roundcube)
 Para instalar Roundcube el primer paso que debemos seguir es escribir lo siguiente:
 ```
 apt-get install php5 php5-mysql postfix apache2 dovecot-imapd dovecot-pop3d mysql-server mysql-client roundcube  
@@ -934,7 +934,7 @@ Una vez hecho esto si entramos en la dirección *http://midominio.com/roundcube*
 
 ![img 55](assets/img55.png?raw=true "img55")
 
-### Servidor FTP
+### 3.7. Servidor FTP
 Vamos a implementar 2 métodos, uno para la bajada de archivos mediante *proftpd* y otro mediante *filezilla*.
 
 Vamos a ver como instalar el primero de ellos:
@@ -961,7 +961,7 @@ Si accedemos al servidor de la siguiente forma: *ftp:/localhost/* nos pedirá un
 
 ![img 58](assets/img58.png?raw=true "img58")
 
-## Explicación scripts CGI
+## 4. Explicación scripts CGI
 En este apartado vamos a explicar el funcionamiento de todos los scripts que tenemos instalados en nuestro servidor. No entraremos en detalles de programación ya que de lo contrario esta memoria se haría extremadamente extensa por lo que explicaremos el funcionamiento de cada uno y destacaremos aspectos importantes.
 
 Todos estos scripts se han introducido en la carpeta */var/www/html/cgi-enabled*
@@ -977,7 +977,7 @@ Tambien se encarga de meter el nombre del usuario en la base de datos de users_t
 -	**Register.pl**: Script que recoge los datos del usuario introducidos en el formulario, crea un usuario con una contraseña aleatoria y lo introduce en la base de datos de usuarios sin verificar. También le manda un correo al usuario con el link de confirmación y su contraseña.
  
 
-### Problemas encontrados
+### 5. Problemas encontrados
 Hemos encontrado un gran número de problemas en prácticamente todos los aspectos de la práctica que hacen que sea muy difícil explicarlos todos.
 
 La gran mayoría acababan siendo problemas de:
@@ -991,7 +991,7 @@ La gran mayoría hemos logrado solucionarlos pero hay 2 problemas que no hemos p
 -	**Wordpress**: Ocurre lo mismo que con Tripwire pero son una gran cantidad de archivos para renombrar por lo que se optara por la instalación el día de la defensa para poder observar sus funcionalidades.
  
 
-### Posibles mejoras
+### 6. Posibles mejoras
 Hemos implementado en el servidor una gran número de funcionalidades pero aun nos han faltado algunas que si hubiéramos tenido más tiempo las hubiéramos implementado, estas mejoras son:
 -	Implementar un servidor DNS para poder resolver el nombre de dominio en la red de área local o incluso conseguir una ip publica de algún proveedor para poder hacer referencia al servidor desde fuera o dentro del área local.
 -	Mejorar la interfaz del perfil del usuario.
@@ -1000,11 +1000,11 @@ Hemos implementado en el servidor una gran número de funcionalidades pero aun n
 -	Usar otro tipo de comunicación entre el servidor y los ficheros de código.
 -	Enviar mail al usuario cuando exceda el limite soft.
 
-### Conclusiones
+### 7. Conclusiones
 Esta es una de las practicas más completas y complicadas (en cuanto a quebraderos de cabeza) nos hemos encontrado, al menos a nuestro parecer, pero es una práctica que te hace aprender mucho sobre la administración de sistemas y de cómo configurar nuestros propios servidores.
 Nos hubiera gustado algo más de libertad para la elección de lenguajes, o métodos de creación de servidores pero dado que está enfocado a administrar y no a crear un servidor eficiente y simple no ha sido posible.
 
-## Referencias
+## 8. Referencias
 -	https://ubuntuforums.org/showthread.php?t=2258746
 -	https://medium.com/@manivannan_data/python-cgi-example-install-and-simple-example-59e049128406
 -	https://hardlimit.com/guia-servidor-en-debian/#__RefHeading__124_1337659763
