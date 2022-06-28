@@ -5,8 +5,7 @@ En este repositorio se encuentra también una versión en pdf para una lectura m
 También se encuentran todos los ficheros de código.
 ##### _**Licencia**_
 Esto es un proyecto que hice para mi universidad por lo que puedes usarlo libremente, tan solo añade un link hacia este repositorio o a mi perfil de Github.
-##### _**Donaciones**_
-Si te ha ayudado mi trabajo puedes ayudarme a seguir creando contenido donandome a través del botón *Sponsor* que se encuentra en la parte superior.
+
 ## Tabla de contenidos
 1. [Introducción](#1-introducción)
 2. [Descripción básica del Sistema](#2-descripción-básica-del-sistema)
